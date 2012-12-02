@@ -52,8 +52,14 @@ public class WlanListAdapter extends ArrayAdapter<WlanApEntry> implements OnLong
 			}
 			
 			if(iv != null){
-				if(HandlerFactory.mac_in_filter(sr)){
-					iv.setImageResource(drawable.green_dot);
+				if(HandlerFactory.mac_supported(sr)){
+					if(HandlerFactory.possibly_know_the_key(sr)){  
+						iv.setImageResource(drawable.green_dot);
+					}
+					else{
+						iv.setImageResource(drawable.yellow_dot);
+					}
+					
 					bt.setText(bt.getText() +" Key: "+ HandlerFactory.get_key(sr));
 					v.setOnLongClickListener(this);
 				}

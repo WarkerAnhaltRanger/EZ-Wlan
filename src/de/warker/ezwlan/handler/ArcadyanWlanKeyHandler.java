@@ -64,4 +64,9 @@ public class ArcadyanWlanKeyHandler implements IWlanKeyHandler {
 		return wpaKey.toUpperCase();
 	}
 
+	@Override
+	public boolean gotPossibleKey(ScanResult sr) {
+		return sr.SSID.toLowerCase().startsWith("easybox");
+	}
+
 }

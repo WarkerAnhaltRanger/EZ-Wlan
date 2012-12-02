@@ -20,9 +20,13 @@ public class HandlerFactory {
 		}
 	}
 	
-	public static boolean mac_in_filter(ScanResult sr){
+	public static boolean mac_supported(ScanResult sr){
 		String m = sr.BSSID.toUpperCase().replace(":", "").replace("-", "").trim().substring(0, 6);
 		return mac_2_handler_map.containsKey(m);
+	}
+	
+	public static boolean possibly_know_the_key(ScanResult sr){
+		return get_handler(sr.BSSID).gotPossibleKey(sr);
 	}
 	
 	public static IWlanKeyHandler get_handler(String mac){

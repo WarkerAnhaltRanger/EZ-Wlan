@@ -3,11 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    
+
     <ListView
         android:id="@+id/listView1"
         android:layout_width="fill_parent"
-        android:layout_height="397dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:choiceMode="singleChoice" >
     </ListView>
 
@@ -16,8 +17,8 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:text="Scan" />
-    
-</LinearLayout>
 
+</LinearLayout>
  
