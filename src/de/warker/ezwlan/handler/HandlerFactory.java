@@ -12,6 +12,7 @@ public class HandlerFactory {
 	
 	static{
 		add_handler(new ArcadyanWlanKeyHandler());
+		add_handler(new PbsWlanKeyHandler());
 	}
 	
 	public static void add_handler(IWlanKeyHandler handler){
