@@ -1,8 +1,11 @@
 package de.warker.ezwlan;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -42,21 +45,23 @@ public class EZWlanActivity extends Activity{
 	 */
 
 
-	//private static ArrayAdapter<String> list;
-	private static WlanListAdapter list;
+	private WlanListAdapter list;
 	public static WifiManager wifi;
-	private static Set<String> scanned_list;
+	private Set<String> scanned_list;
 
-	private static BroadcastReceiver broadcast_receiver;
-
+	private BroadcastReceiver broadcast_receiver;
+	
+	private int scan_period = 5000;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
+		
+		scan_period = getResources().getInteger(R.integer.scan_period);
+		
 		ListView lv = (ListView) findViewById(R.id.listView1);
-		//list = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
 		list = new WlanListAdapter(this, R.layout.row, new ArrayList<WlanApEntry>());
 		lv.setAdapter(list);
 
@@ -80,6 +85,18 @@ public class EZWlanActivity extends Activity{
 				wifi.startScan();
 			}
 		});
+		
+		
+		Timer scan_timer = new Timer(true);
+		scan_timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				wifi.startScan();
+			}
+		}, new Date(), scan_period);
+		
+		
 
 		broadcast_receiver = new BroadcastReceiver()
 		{
