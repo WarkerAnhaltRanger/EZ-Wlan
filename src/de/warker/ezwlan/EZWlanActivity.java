@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -17,6 +16,9 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -46,12 +48,13 @@ public class EZWlanActivity extends Activity{
 
 
 	private WlanListAdapter list;
-	public static WifiManager wifi;
 	private Set<String> scanned_list;
-
+	
 	private BroadcastReceiver broadcast_receiver;
 	
-	private int scan_period = 5000;
+	public static WifiManager wifi;
+	public static Timer autoscan_timer;
+	public static Settings settings;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -59,7 +62,7 @@ public class EZWlanActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		scan_period = getResources().getInteger(R.integer.scan_period);
+		settings = new Settings(getResources());
 		
 		ListView lv = (ListView) findViewById(R.id.listView1);
 		list = new WlanListAdapter(this, R.layout.row, new ArrayList<WlanApEntry>());
@@ -86,17 +89,8 @@ public class EZWlanActivity extends Activity{
 			}
 		});
 		
-		
-		Timer scan_timer = new Timer(true);
-		scan_timer.schedule(new TimerTask() {
-			
-			@Override
-			public void run() {
-				wifi.startScan();
-			}
-		}, new Date(), scan_period);
-		
-		
+		autoscan_timer = new Timer(true);
+		autoscan_timer.schedule(new EzWlanAutoScanTask(), new Date(), settings.getAutoscan_period());
 
 		broadcast_receiver = new BroadcastReceiver()
 		{
@@ -121,4 +115,22 @@ public class EZWlanActivity extends Activity{
 		unregisterReceiver(broadcast_receiver);
 		super.onDestroy();
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		if(item.getItemId() == R.id.Settings){
+			startActivity(new Intent(this, EzWlanSettingActivity.class));
+			//finish();
+			return false;
+		}
+		return super.onMenuItemSelected(featureId, item); 
+	}
+
 }
