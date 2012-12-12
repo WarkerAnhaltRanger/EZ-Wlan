@@ -1,11 +1,10 @@
 package de.warker.ezwlan.list;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -21,63 +20,54 @@ import de.warker.ezwlan.handler.HandlerFactory;
 
 public class WlanListAdapter extends ArrayAdapter<WlanApEntry> implements OnLongClickListener{
 
-	public WlanListAdapter(Context context, int textViewResourceId,
-			List<WlanApEntry> objects) {
-		super(context, textViewResourceId, objects);
+	private LayoutInflater vi;
+
+	public WlanListAdapter(Context context) {
+		super(context, R.layout.row, new ArrayList<WlanApEntry>());
+		vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
-		if (v == null) {
-			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.row, null);
-		}
+		View v = vi.inflate(R.layout.row, parent, false);
 		WlanApEntry entry = getItem(position);
 		if (entry != null) {
-			
-			ScanResult sr = entry.getScan_result();
-			v.setTag(entry);
 
+			ScanResult sr = entry.getScan_result();
+			//v.setTag(position);
+			v.setTag(sr);
+			
 			ImageView iv = (ImageView) v.findViewById(R.id.dot_image);
 			TextView tt = (TextView) v.findViewById(R.id.ssid);
 			TextView bt = (TextView) v.findViewById(R.id.mac);
 
-			if(tt != null){
-				tt.setText(sr.SSID);
-			}
+			tt.setText(sr.SSID);
+			bt.setText(sr.BSSID);
 
-			if(bt != null){
-				bt.setText(sr.BSSID);
-			}
-			
-			if(iv != null){
-				if(HandlerFactory.mac_supported(sr)){
-					if(HandlerFactory.possibly_know_the_key(sr)){  
-						iv.setImageResource(drawable.green_dot);
-					}
-					else{
-						iv.setImageResource(drawable.yellow_dot);
-					}
-					
-					bt.setText(bt.getText() +" Key: "+ HandlerFactory.get_key(sr));
-					v.setOnLongClickListener(this);
+			if(HandlerFactory.mac_supported(sr)){
+				if(HandlerFactory.possibly_know_the_key(sr)){  
+					iv.setImageResource(drawable.green_dot);
 				}
 				else{
-					iv.setImageResource(drawable.red_dot);
+					iv.setImageResource(drawable.yellow_dot);
 				}
-			}
 
+				bt.setText(bt.getText() +" Key: "+ HandlerFactory.get_key(sr));
+				v.setOnLongClickListener(this);
+			}
+			else{
+				iv.setImageResource(drawable.red_dot);
+			}
 		}
 		return v;
 	}
 
 	@Override
 	public boolean onLongClick(View v) {
-		WlanApEntry wlan_entry = (WlanApEntry)v.getTag();
-		ScanResult sr = wlan_entry.getScan_result();
+		//WlanApEntry wlan_entry = (WlanApEntry)v.getTag();
+		//ScanResult sr = wlan_entry.getScan_result();
+		ScanResult sr = (ScanResult) v.getTag();
 		if(sr != null){
-			Log.d("wifi", "connect"+ sr);
 			WifiConfiguration conf = new WifiConfiguration();
 			conf.SSID = "\""+sr.SSID+"\"";
 			conf.hiddenSSID = true;
@@ -101,7 +91,7 @@ public class WlanListAdapter extends ArrayAdapter<WlanApEntry> implements OnLong
 			// do handle with IWlanKeyHandler
 			String key = HandlerFactory.get_key(sr);
 			//Log.d("ezwlan", "SSID:"+ sr.SSID + " key: "+ key);
-			
+
 			conf.preSharedKey = "\""+ key+"\"";
 			int netid = EZWlanActivity.wifi.addNetwork(conf);
 			if(EZWlanActivity.wifi.enableNetwork(netid, false)){

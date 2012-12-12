@@ -44,7 +44,7 @@ public class EzWlanSettingActivity extends Activity {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				//EZWlanActivity.autoscan_timer.cancel();
+				EZWlanActivity.autoscan_timer.cancel();
 				int progress = seekBar.getProgress();
 				EZWlanActivity.settings.setAutoscan_period(progress);
 				if(progress >= 1000){
@@ -55,12 +55,5 @@ public class EzWlanSettingActivity extends Activity {
 			}
 		});
 	}
-
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_ez_wlan_setting, menu);
-		return true;
-	}*/
 
 }

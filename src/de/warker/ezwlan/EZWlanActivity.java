@@ -1,9 +1,6 @@
 package de.warker.ezwlan;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Timer;
 
 import android.app.Activity;
@@ -12,10 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,10 +22,10 @@ import android.widget.Toast;
 import de.warker.ezwlan.list.WlanApEntry;
 import de.warker.ezwlan.list.WlanListAdapter;
 
-public class EZWlanActivity extends Activity{
+public class EZWlanActivity extends Activity implements OnClickListener{
 
 	/**
-	 * PLEASE: THIS SOFTWARE IS FOR SECURITY PRUPORSES ONLY!
+	 * PLEASE: THIS SOFTWARE IS FOR SECURITY TESTING PRUPORSES ONLY!
 	 * IF YOU DO SOMETHING ILLEGAL WITH IT YOU ARE AT YOUR OWN!
 	 * I'M NOT RESPONSIBLE FOR ANYTHING YOU DO WITH IT!
 	 */
@@ -48,24 +43,23 @@ public class EZWlanActivity extends Activity{
 
 
 	private WlanListAdapter list;
-	private Set<String> scanned_list;
-	
+
 	private BroadcastReceiver broadcast_receiver;
-	
+
 	public static WifiManager wifi;
 	public static Timer autoscan_timer;
 	public static Settings settings;
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+
 		settings = new Settings(getResources());
-		
+
 		ListView lv = (ListView) findViewById(R.id.listView1);
-		list = new WlanListAdapter(this, R.layout.row, new ArrayList<WlanApEntry>());
+		list = new WlanListAdapter(this);
 		lv.setAdapter(list);
 
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -74,22 +68,10 @@ public class EZWlanActivity extends Activity{
 			wifi.setWifiEnabled(true);
 		}
 
-		scanned_list = new HashSet<String>();
-		for(WifiConfiguration conf : wifi.getConfiguredNetworks()){
-			Log.d("wifi", "Netconf: "+conf);
-			scanned_list.add(conf.SSID.replaceAll("\"", " ").trim());
-		}
-
 		Button button = (Button) findViewById(R.id.button1);
-		button.setOnClickListener(new OnClickListener() {
+		button.setOnClickListener(this);
 
-			@Override
-			public void onClick(View v) {
-				wifi.startScan();
-			}
-		});
-		
-		autoscan_timer = new Timer(true);
+		autoscan_timer = new Timer();
 		autoscan_timer.schedule(new EzWlanAutoScanTask(), new Date(), settings.getAutoscan_period());
 
 		broadcast_receiver = new BroadcastReceiver()
@@ -115,14 +97,14 @@ public class EZWlanActivity extends Activity{
 		unregisterReceiver(broadcast_receiver);
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.menu, menu);
-	    return true;
+		inflater.inflate(R.menu.menu, menu);
+		return true;
 	}
-	
+
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		if(item.getItemId() == R.id.Settings){
@@ -131,6 +113,11 @@ public class EZWlanActivity extends Activity{
 			return false;
 		}
 		return super.onMenuItemSelected(featureId, item); 
+	}
+
+	@Override
+	public void onClick(View v) {
+		wifi.startScan();
 	}
 
 }
