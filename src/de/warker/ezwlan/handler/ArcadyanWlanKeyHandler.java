@@ -8,6 +8,8 @@ public class ArcadyanWlanKeyHandler implements IWlanKeyHandler {
 													"00:23:08", "00:26:4D",	"1C:C6:3C",	
 													"50:7E:5D", "74:31:70",	"7C:4F:B5",	
 													"88:25:2C"};
+	
+	private static final String[] SUPPORTED_SSID = {"easybox", "arcor", "vodafone" }; 
 
 	@Override
 	public String[] getSupportedMacs() {
@@ -66,7 +68,13 @@ public class ArcadyanWlanKeyHandler implements IWlanKeyHandler {
 
 	@Override
 	public boolean gotPossibleKey(ScanResult sr) {
-		return sr.SSID.toLowerCase().startsWith("easybox");
+		final String ssid = sr.SSID.toLowerCase();
+		for(String ssid_prefix : SUPPORTED_SSID){
+			if(ssid.startsWith(ssid_prefix.toLowerCase())){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

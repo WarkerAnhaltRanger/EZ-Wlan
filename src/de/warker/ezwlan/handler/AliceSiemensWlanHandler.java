@@ -32,7 +32,9 @@ public class AliceSiemensWlanHandler implements IWlanKeyHandler {
 	@Override
 	public String getKey(ScanResult sr) {
 		final String mac_wlan = HandlerFactory.bssid_helper(sr.BSSID);
-		String mac_eth = mac_wlan.substring(0, mac_wlan.length()-1) + new String((new byte[]{(byte) (mac_wlan.charAt(mac_wlan.length()-1)-1)}));
+		String mac_eth = String.format("%s%02x", 
+				mac_wlan.substring(0, mac_wlan.length()-2), 
+				(byte)(Integer.parseInt(mac_wlan.substring(mac_wlan.length()-2), 16)-1));
 		mac_eth = mac_eth.toLowerCase();
 		System.out.println(mac_eth); // OK
 		try {

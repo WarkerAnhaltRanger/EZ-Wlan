@@ -13,6 +13,7 @@ public class HandlerFactory {
 	static{
 		add_handler(new ArcadyanWlanKeyHandler());
 		add_handler(new PbsWlanKeyHandler());
+		add_handler(new AliceSiemensWlanHandler());
 	}
 	
 	public static void add_handler(IWlanKeyHandler handler){
