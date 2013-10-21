@@ -15,6 +15,7 @@ public class HandlerFactory {
 		add_handler(new PbsWlanKeyHandler());
 		add_handler(new AliceSiemensWlanHandler());
 		add_handler(new TplinkWlanHandler());
+		add_handler(new SitecomHandler());
 	}
 	
 	public static void add_handler(IWlanKeyHandler handler){

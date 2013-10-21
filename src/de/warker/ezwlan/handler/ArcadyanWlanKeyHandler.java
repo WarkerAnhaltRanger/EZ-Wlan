@@ -2,20 +2,26 @@ package de.warker.ezwlan.handler;
 
 import android.net.wifi.ScanResult;
 
-public class ArcadyanWlanKeyHandler implements IWlanKeyHandler {
+public class ArcadyanWlanKeyHandler extends AbstractWlanKeyHandler {
 	
-	private static final String[] SUPPORTED_MACS = {"00:12:BF",	"00:1A:2A", "00:1D:19", 
-													"00:23:08", "00:26:4D",	"1C:C6:3C",	
-													"50:7E:5D", "74:31:70",	"7C:4F:B5",	
-													"88:25:2C"};
-	
-	private static final String[] SUPPORTED_SSID = {"easybox", "arcor", "vodafone" }; 
-
-	@Override
-	public String[] getSupportedMacs() {
-		return SUPPORTED_MACS;
+	public ArcadyanWlanKeyHandler() {
+		SUPPORTED_MACS.add("00:12:BF");
+		SUPPORTED_MACS.add("00:1A:2A");
+		SUPPORTED_MACS.add("00:1D:19");
+		SUPPORTED_MACS.add("00:23:08");
+		SUPPORTED_MACS.add("00:26:4D");
+		SUPPORTED_MACS.add("1C:C6:3C");
+		SUPPORTED_MACS.add("50:7E:5D");
+		SUPPORTED_MACS.add("74:31:70");
+		SUPPORTED_MACS.add("7C:4F:B5");
+		SUPPORTED_MACS.add("88:25:2C");
+		SUPPORTED_MACS.add("7E:4F:B5");
+		
+		SUPPORTED_SSID.add("easybox");
+		SUPPORTED_SSID.add("arcor");
+		SUPPORTED_SSID.add("vodafone");
 	}
-
+		
 	@Override
 	public String getKey(ScanResult sr) {
 		// code from Wotan.cc
@@ -64,17 +70,6 @@ public class ArcadyanWlanKeyHandler implements IWlanKeyHandler {
 
 
 		return wpaKey.toUpperCase();
-	}
-
-	@Override
-	public boolean gotPossibleKey(ScanResult sr) {
-		final String ssid = sr.SSID.toLowerCase();
-		for(String ssid_prefix : SUPPORTED_SSID){
-			if(ssid.startsWith(ssid_prefix.toLowerCase())){
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

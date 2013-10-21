@@ -7,26 +7,12 @@ import java.security.NoSuchAlgorithmException;
 import android.net.wifi.ScanResult;
 import de.warker.ezwlan.helper.Base64Coding;
 
-public class AliceSiemensWlanHandler implements IWlanKeyHandler {
-
-	private static final String[] SUPPORTED_MACS = {"00:25:5E"};
+public class AliceSiemensWlanHandler extends AbstractWlanKeyHandler {
 	
-	private static final String[] SUPPORTED_SSID = {"alice-wlan"}; 
-	
-	@Override
-	public String[] getSupportedMacs() {
-		return SUPPORTED_MACS;
-	}
-
-	@Override
-	public boolean gotPossibleKey(ScanResult sr) {
-		final String ssid = sr.SSID.toLowerCase();
-		for(String ssid_prefix : SUPPORTED_SSID){
-			if(ssid.startsWith(ssid_prefix.toLowerCase())){
-				return true;
-			}
-		}
-		return false;
+	public AliceSiemensWlanHandler() {
+		SUPPORTED_MACS.add("00:25:5e");
+		SUPPORTED_SSID.add("alice-wlan");
+		SUPPORTED_SSID.add("o2");
 	}
 	
 	@Override
