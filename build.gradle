@@ -1,0 +1,21 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 11
+    buildToolsVersion "21.1.2"
+    defaultConfig {
+        applicationId "de.warker.ezwlan"
+        minSdkVersion 11
+        targetSdkVersion 15
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+}
