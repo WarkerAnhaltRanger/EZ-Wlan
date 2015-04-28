@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">EZ-Wlan</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_ez_wlan_setting">Settings</string>
-    <string name="auto_scan_string">Autoscan period</string>
-    <string name="scan_button_text">Scan</string>
-
-</resources>
