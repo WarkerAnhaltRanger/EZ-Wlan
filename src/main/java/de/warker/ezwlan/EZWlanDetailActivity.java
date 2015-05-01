@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -32,6 +32,7 @@ public class EZWlanDetailActivity extends Activity implements OnItemClickListene
     private ListView KeyListView;
     private ArrayAdapter<String> KeyListAdapter;
     private IWlanKeyHandler WlanKeyHandler;
+    private Button GuessKeyButton;
 
 
     @Override
@@ -58,54 +59,48 @@ public class EZWlanDetailActivity extends Activity implements OnItemClickListene
         KeyListView.setAdapter(KeyListAdapter);
         KeyListView.setOnItemClickListener(this);
 
-        Button btn = (Button)findViewById(R.id.GuessKeyButton);
-        btn.setOnClickListener(this);
+        GuessKeyButton = (Button)findViewById(R.id.GuessKeyButton);
+        GuessKeyButton.setOnClickListener(this);
         KeyListAdapter.setNotifyOnChange(false);
     }
 
     @Override
     public void onClick(View view) {
-        final ProgressDialog p = ProgressDialog.show(view.getContext(),
-                "", "Guessing Keys.. this may take some time", true, true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                generateKeys();
-                p.dismiss();
-            }
-        }).start();
-
+        new GenerateKeysTask().execute(WlanKeyHandler);
     }
 
-    private void generateKeys(){
-        KeyListAdapter.clear();
-        if(scanResult != null && WlanKeyHandler != null){
-            final String[] t = WlanKeyHandler.getKeys(scanResult);
-            if( t != null && t.length > 0) {
-                for (String str : t) {
-                    Log.d("EZ_WLAN", "generated key: " + str);
-                    KeyListAdapter.add(str);
-                }
+    private class GenerateKeysTask extends AsyncTask<IWlanKeyHandler, Integer, String[]>{
+
+        private ProgressDialog processDialog;
+
+        @Override
+        protected void onPreExecute() {
+            processDialog = ProgressDialog.show(GuessKeyButton.getContext(),
+                    "", "Guessing Keys.. this may take some time", true, false);
+            KeyListAdapter.clear();
+        }
+
+        @Override
+        protected String[] doInBackground(IWlanKeyHandler... iWlanKeyHandlers) {
+            if(iWlanKeyHandlers.length > 0 && scanResult != null){ // only supports one yet
+                return iWlanKeyHandlers[0].getKeys(scanResult);
+            }
+            return new String[0];
+        }
+
+        @Override
+        protected void onPostExecute(String[] strings) {
+            if(strings != null && strings.length > 0){
+                KeyListAdapter.addAll(strings);
             }
             else{
-                this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(EZWlanDetailActivity.this,
-                                "OHH NONONO... luck", Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-
+                Toast.makeText(EZWlanDetailActivity.this,
+                        "No keys found.. sorry.", Toast.LENGTH_LONG)
+                        .show();
             }
+            KeyListAdapter.notifyDataSetChanged();
+            processDialog.dismiss();
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                KeyListAdapter.notifyDataSetChanged();
-            }
-        });
-
     }
 
     @Override
