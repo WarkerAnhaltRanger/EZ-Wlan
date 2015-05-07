@@ -1,1 +1,0 @@
-/home/warker/AndroidStudioProjects/EZ-Wlan/app/build/intermediates/classes/release
