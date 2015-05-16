@@ -57,23 +57,9 @@ public class EasyboxNewWlanKeyHandler extends ArcadyanWlanKeyHandler {
     }
 
     private String calcNewMac(String old_mac, String serial_number){
-        //arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
-        //pre_heat.put(serial_number.getBytes(), 6, 4);
-        /*
-        pre_heat[6:15] = '%s%05d' % (serial_number[0:4], int(old_mac[8:], 16)) # serial
-        pre_heat[17:23] = old_mac[6:] # fuege alte MAC ein
-        res = hashlib.md5(pre_heat).hexdigest() # MD5 hashing
-        return '%02X%s%s%s%s' %(int(old_mac[0:2], 16)+2,
-                            old_mac[2:6],
-                            res[8:10].upper(),
-                            res[16:18].upper(),
-                            res[28:30].upper())
-         */
         System.arraycopy(serial_number.getBytes(), 0, pre_heat, 6, 4);
-        //pre_heat.put(String.format("%05d", Integer.parseInt(old_mac.substring(8), 16)).getBytes(), 10, 4);
         System.arraycopy(String.format("%05d", Integer.parseInt(old_mac.substring(8), 16)).getBytes(), 0,
                 pre_heat, 10, 5);
-        //pre_heat.put(old_mac.toUpperCase().substring(6).getBytes(), 17, 6);
         System.arraycopy(old_mac.toUpperCase().substring(6).getBytes(), 0,
                 pre_heat, 17, 6);
 
@@ -93,7 +79,7 @@ public class EasyboxNewWlanKeyHandler extends ArcadyanWlanKeyHandler {
         final List<String> keylist = new LinkedList<String>();
         if(ssid.matches("^EASYBOX-[0-9A-F]{4}[0-9]{2}")){
             String mac_prefix = String.format("%02X%s%s",
-                    Byte.parseByte(bssid.substring(0, 2), 16) - 0x2, // first octet - 2
+                    (Integer.parseInt(bssid.substring(0, 2), 16) - 2) & 0xFF, // first octet - 2
                     bssid.substring(2, 6),                         // 2nd & 3rd octet is the same
                     ssid.substring(8, 12));                         // 4th and 5th octet from old ssid
             int start = Integer.parseInt(ssid.substring(10, 12)+ "00", 16);

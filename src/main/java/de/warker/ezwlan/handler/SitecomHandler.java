@@ -11,21 +11,39 @@ public class SitecomHandler extends AbstractWlanKeyHandler {
 	
 	public SitecomHandler() {
 		SUPPORTED_MACS.add("00:0C:F6");
+
+		//test
+		SUPPORTED_MACS.add("64:D1:A3");
+		//debug
+		SUPPORTED_MACS.add("aa:bb:cc");
+
 		SUPPORTED_SSID.add("Sitecom");
 	}
 	
 	private final String lt = "123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ"; // without i,I,l,L,o,O,0
 
+
+	private String inc_bssid_by(String bssid, int val){
+		return (bssid.substring(0, bssid.length() - 1) +
+				String.format("%02X",
+						(Integer.parseInt(bssid.substring(bssid.length() - 1), 16) + val))
+						.substring(1))
+				.toUpperCase();
+	}
+
 	@Override
 	public String[] getKeys(ScanResult sr) {
 
 		final List<String> keys = new LinkedList<String>();
-
+		final String bssid = HandlerFactory.bssid_helper(sr.BSSID);
 		String [] macs = {
-				HandlerFactory.bssid_helper(sr.BSSID).toLowerCase(),	// wlm2500
-				HandlerFactory.bssid_helper(sr.BSSID).toUpperCase()		// wlm3500 thx to Rui Araújo (issue #2)
-				// TODO: wlm5500
+				bssid.toLowerCase(),	// wlm2500
+				bssid.toUpperCase(),	// wlm3500 thx to Rui Araújo (issue #2)
+				sr.frequency > 2500 ? inc_bssid_by(bssid, 1) : // wlm5500 5ghz
+						inc_bssid_by(bssid, 2) // wlm5500 2.4ghz?
 		};
+
+		Log.d("DEBUG", "sr.frequency = "+ sr.frequency);
 
 		for(String mac : macs) {
 

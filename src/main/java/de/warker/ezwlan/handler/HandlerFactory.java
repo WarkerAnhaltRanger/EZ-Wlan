@@ -51,4 +51,11 @@ public class HandlerFactory {
 		return null;
 	}
 
+	public static String inc_last_byte(String hex, int value){
+		return String.format("%s%02x",
+				hex.substring(0, hex.length()-2),
+				(byte)(Integer.parseInt(hex.substring(hex.length()-2), 16)+value))
+				.toLowerCase();
+	}
+
 }
